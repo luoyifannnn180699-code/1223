@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #F8F7F4;
+  --ink: #2C2C2C;
+  --accent: #FFB703;
+  --accent-hover: #F0A500;
+  --border: #E0DED9;
+  --card-bg: #FFFFFF;
+  --card-subtle: #FFFDF9;
+}
+
+@layer utilities {
+  .font-gaegu {
+    font-family: 'Gaegu', cursive, sans-serif;
+  }
+  .font-syne {
+    font-family: 'Gaegu', cursive, sans-serif;
+  }
+  .font-mono-code {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .font-hanzi {
+    font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  }
+  
+  .nav-card {
+    background: #FFFFFF;
+    border: 2px solid var(--border);
+    border-radius: 20px;
+  }
+  
+  .panel {
+    background: #FFFFFF;
+    border: 2px solid var(--border);
+    border-radius: 20px;
+  }
+
+  .btn-gaegu {
+    background: var(--accent);
+    color: var(--ink);
+    border: none;
+    border-radius: 50px;
+    font-family: 'Gaegu', cursive;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+  }
+  .btn-gaegu:hover {
+    transform: scale(1.03);
+    background: var(--accent-hover);
+  }
+
+  .meta-tag {
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: #888888;
+  }
+  
+  .card-tianzi {
+    border: 2px dashed #FFB703;
+    background: #FFFDF9;
+    border-radius: 16px;
+  }
+
+  .accent-text {
+    color: #D97706;
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Custom warm scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F8F7F4;
+}
+::-webkit-scrollbar-thumb {
+  background: #E0DED9;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FFB703;
+}
