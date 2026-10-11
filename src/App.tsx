@@ -112,9 +112,9 @@ export default function App() {
     <div className="h-screen w-screen overflow-hidden flex flex-col p-3 md:p-4 gap-3 bg-[#F8F7F4] text-[#2C2C2C] font-sans selection:bg-[#FFB703] selection:text-[#2C2C2C]">
       {/* Variation 1 Header (nav-card) */}
       <Navbar
-  activeTab={activeTab}
-  setActiveTab={setActiveTab}
-  onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
         currentUser={currentUser}
         onOpenAuth={() => setIsAuthOpen(true)}
         onOpenProfile={() => setIsProfileOpen(true)}
@@ -151,7 +151,7 @@ export default function App() {
                 { id: 'canvas', label: '📝 Tianzi Ge' },
                 { id: 'recorder', label: '🎧 Audio' },
                 { id: 'ai-tutor', label: '🤖 Tutor AI' },
-                { id: 'kamus-hsk', label: 'Kamus HSK 1-9', icon: '📚' },
+                { id: 'kamus-hsk', label: '📚 Kamus HSK' },
                 { id: 'analytics', label: '📊 Analisis' },
                 { id: 'teacher', label: '👨‍🏫 Guru' }
               ].map((t) => (
@@ -172,6 +172,24 @@ export default function App() {
             {/* TAB 1: BUKU AJAR STANDARD COURSE (15 BAB) */}
             {activeTab === 'lessons' && (
               <div className="space-y-6 max-w-4xl">
+
+                {/* NAVIGASI 15 BAB */}
+                <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+                  {HSK_LESSONS.map((l, i) => (
+                    <button
+                      key={l.id}
+                      onClick={() => handleSelectChapter(i)}
+                      className={`px-3 py-1.5 rounded-full whitespace-nowrap text-sm transition border-2 ${
+                        currentChapterIdx === i
+                          ? 'border-[#FFB703] bg-[#FFB703] text-[#2C2C2C] font-bold shadow-xs'
+                          : 'border-[#E0DED9] bg-white text-[#666666] hover:border-[#FFB703]'
+                      }`}
+                    >
+                      Bab {l.id}
+                    </button>
+                  ))}
+                </div>
+
                 {/* Lesson Header Banner */}
                 <div className="border-2 border-[#E0DED9] bg-[#FFFDF9] rounded-[18px] p-6 space-y-2 relative overflow-hidden">
                   <div className="flex justify-between items-start gap-4">
@@ -229,7 +247,6 @@ export default function App() {
                           key={dIdx}
                           className="bg-white border-2 border-[#E0DED9] rounded-[18px] overflow-hidden shadow-xs"
                         >
-                          {/* Dialog Header */}
                           <div className="px-5 py-3 border-b-2 border-[#E0DED9] flex justify-between items-center bg-[#FFFDF9]">
                             <div className="meta-tag">
                               DIALOG #{dIdx + 1} · {dlg[0]?.translation.split(' ')[0] || 'Percakapan'}
@@ -243,7 +260,6 @@ export default function App() {
                             </button>
                           </div>
 
-                          {/* Dialog Rows */}
                           <div className="divide-y divide-[#F0EFEA]">
                             {dlg.map((line, lIdx) => (
                               <div
@@ -392,7 +408,6 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Search Bar */}
                       <div className="flex flex-col md:flex-row gap-3">
                         <div className="relative flex-grow font-mono-code text-xs">
                           <Search className="w-4 h-4 text-[#888888] absolute left-3 top-1/2 -translate-y-1/2" />
@@ -423,7 +438,6 @@ export default function App() {
                         )}
                       </div>
 
-                      {/* Grammar Cards List */}
                       <div className="space-y-4">
                         {displayedGrammar.map((g, i) => (
                           <div
@@ -450,7 +464,6 @@ export default function App() {
                               <span>{g.rule}</span>
                             </h4>
 
-                            {/* Formula */}
                             {g.formula && (
                               <div className="card-tianzi p-3 text-left">
                                 <span className="meta-tag block mb-1">Rumus Pola Kalimat:</span>
@@ -464,7 +477,6 @@ export default function App() {
                               {g.desc}
                             </p>
 
-                            {/* Notes */}
                             {g.notes && g.notes.length > 0 && (
                               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-1">
                                 <span className="meta-tag text-amber-800 font-bold">Catatan Penting:</span>
@@ -476,7 +488,6 @@ export default function App() {
                               </div>
                             )}
 
-                            {/* Examples */}
                             {g.examples && g.examples.length > 0 && (
                               <div className="space-y-2 pt-1">
                                 <span className="meta-tag">Contoh Penggunaan:</span>
@@ -653,18 +664,18 @@ export default function App() {
             {/* TAB 6: TUTOR AI LIDIA */}
             {activeTab === 'ai-tutor' && <AITutorView audioSpeed={audioSpeed} />}
 
-            {/* TAB 7: DASBOR ANALISIS DATA */}
-            {activeTab === 'analytics' && <AnalyticsDashboard currentUser={currentUser} />}
-            
+            {/* TAB 7: KAMUS HSK 1-9 */}
             {activeTab === 'kamus-hsk' && <KamusHskView />}
 
-            {/* TAB 8: PORTAL GURU */}
+            {/* TAB 8: DASBOR ANALISIS DATA */}
+            {activeTab === 'analytics' && <AnalyticsDashboard currentUser={currentUser} />}
+
+            {/* TAB 9: PORTAL GURU */}
             {activeTab === 'teacher' && <TeacherPortal />}
           </div>
 
-          {/* Right Sidebar Info Panel (Variation 1 Card Tianzi & Goals) */}
+          {/* Right Sidebar Info Panel */}
           <aside className="hidden lg:flex flex-col gap-6 p-6 border-l-2 border-[#E0DED9] overflow-y-auto custom-scrollbar bg-[#FFFDF9] select-none shrink-0">
-            {/* Variation 1 Tianzi Welcome Card */}
             <div className="card-tianzi p-5 text-center space-y-3">
               <h2 className="font-gaegu text-3xl font-bold text-[#2C2C2C] m-0">Selamat Datang!</h2>
               <p className="text-xs text-[#666666] leading-relaxed">
@@ -679,7 +690,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* Tujuan Belajar (from Variation 1) */}
             <div className="space-y-1.5 border-t-2 border-[#E0DED9] pt-4">
               <h3 className="meta-tag">TUJUAN BELAJAR HARI INI</h3>
               <p className="text-xs text-[#555555] leading-relaxed">
@@ -687,7 +697,6 @@ export default function App() {
               </p>
             </div>
 
-            {/* Active Lesson Picker */}
             <div className="space-y-1.5 border-t-2 border-[#E0DED9] pt-4">
               <div className="meta-tag">PILIH BAB BUKU AJAR</div>
               <select
@@ -703,7 +712,6 @@ export default function App() {
               </select>
             </div>
 
-            {/* Quick Actions */}
             <div className="space-y-2 border-t-2 border-[#E0DED9] pt-4">
               <div className="meta-tag">TANYA CEPAT LIDIA AI</div>
               <div className="flex flex-col gap-1.5">
@@ -724,7 +732,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Share Link Button */}
             <button
               onClick={() => setIsShareOpen(true)}
               className="mt-auto btn-gaegu w-full py-2 text-lg shadow-sm flex items-center justify-center gap-2"
@@ -736,12 +743,10 @@ export default function App() {
         </section>
       </div>
 
-      {/* Variation 1 Footer */}
       <footer className="text-center font-mono-code text-[11px] text-[#888888] shrink-0">
         © 2026 PLATFORM BELAJAR MANDARIN ANAK SEKOLAH · HSK LEVEL 1 INTERAKTIF
       </footer>
 
-      {/* MODALS */}
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
@@ -758,7 +763,6 @@ export default function App() {
         onUpdate={() => setCurrentUser(dbService.getCurrentUser())}
       />
 
-      {/* Share Modal in Variation 1 Friendly Card Style */}
       {isShareOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
           <div className="bg-white border-2 border-[#E0DED9] rounded-[24px] max-w-md w-full p-6 text-center space-y-4 shadow-xl">
@@ -779,7 +783,6 @@ export default function App() {
               Ajak teman sekelas belajar bersama! Dapat dibuka langsung di HP, Tablet, atau Laptop.
             </p>
 
-            {/* QR Code */}
             <div className="bg-[#FFFDF9] p-3 inline-block mx-auto border-2 border-[#FFB703] rounded-2xl">
               <img
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
@@ -793,7 +796,6 @@ export default function App() {
               </span>
             </div>
 
-            {/* Link Copy Input */}
             <div className="flex items-center gap-2">
               <input
                 type="text"
@@ -810,7 +812,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* Action Buttons */}
             <div className="grid grid-cols-2 gap-2 pt-1 font-gaegu text-lg">
               <a
                 href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
