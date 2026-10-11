@@ -1,221 +1,132 @@
+// src/services/speech.ts
+// Audio Mandarin 3-tier priority:
+// 1. audio-cmn (suara manusia asli dari GitHub)
+// 2. Google Translate TTS (natural, butuh internet)
+// 3. Web Speech API (offline, robot)
+
+const AUDIO_CMN_BASE = 'https://cdn.jsdelivr.net/gh/hugolpz/audio-cmn@master/96k/hsk/';
+
+let currentAudio: HTMLAudioElement | null = null;
+
 /**
- * Enhanced Mandarin Speech Synthesis Engine (Web Speech API)
- * Optimised for Mandarin (zh-CN) pronunciation, tone clarity, natural inflection,
- * and learner-friendly cadence with neural voice prioritization.
+ * Cek apakah teks hanya berisi karakter Hanzi (tanpa spasi/tanda baca).
  */
-
-export interface VoiceModelOption {
-  id: string;
-  name: string;
-  description: string;
-  gender: 'female' | 'male';
-  recommended?: boolean;
+function isSingleHanziOrWord(text: string): boolean {
+  return /^[\u4e00-\u9fa5]+$/.test(text.trim());
 }
 
-class MandarinSpeechEngine {
-  private synth: SpeechSynthesis | null = null;
-  private voices: SpeechSynthesisVoice[] = [];
-  private currentUtterance: SpeechSynthesisUtterance | null = null;
-  private isSpeaking = false;
-  private selectedModelId = 'xiaoxiao'; // 'xiaoxiao' | 'yunxi' | 'xiaoyi' | 'standard'
+/**
+ * Putar audio dari audio-cmn (suara manusia).
+ * Berhasil = return true.
+ */
+async function tryAudioCmn(text: string): Promise<boolean> {
+  if (!isSingleHanziOrWord(text)) return false;
 
-  public readonly availableModels: VoiceModelOption[] = [
-    {
-      id: 'xiaoxiao',
-      name: 'Lidia AI (Xiaoxiao)',
-      description: 'Suara wanita alami, ramah, artikulasi 4 nada jernih (Rekomendasi Pemula)',
-      gender: 'female',
-      recommended: true
-    },
-    {
-      id: 'yunxi',
-      name: 'Laoshi Yunxi',
-      description: 'Suara pria hangat, intonasi pengajar resmi standar HSK Hanban',
-      gender: 'male'
-    },
-    {
-      id: 'xiaoyi',
-      name: 'Xiaoyi Santai',
-      description: 'Suara wanita ceria dengan tempo santai untuk dialog sehari-hari',
-      gender: 'female'
-    },
-    {
-      id: 'standard',
-      name: 'Standar Sistem',
-      description: 'Mesin sintesis suara bawaan peramban',
-      gender: 'female'
-    }
-  ];
+  const trimmed = text.trim();
+  const url = `${AUDIO_CMN_BASE}cmn-${encodeURIComponent(trimmed)}.mp3`;
 
-  constructor() {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      this.synth = window.speechSynthesis;
-      this.loadVoices();
-      if (speechSynthesis.onvoiceschanged !== undefined) {
-        speechSynthesis.onvoiceschanged = () => this.loadVoices();
-      }
-    }
-  }
+  try {
+    stopAudio();
 
-  private loadVoices() {
-    if (!this.synth) return;
-    this.voices = this.synth.getVoices();
-  }
+    const audio = new Audio(url);
+    audio.crossOrigin = 'anonymous';
 
-  public setVoiceModel(modelId: string) {
-    if (this.availableModels.some((m) => m.id === modelId)) {
-      this.selectedModelId = modelId;
-    }
-  }
+    // Cek dulu apakah file-nya ada (HEAD request via fetch)
+    const check = await fetch(url, { method: 'HEAD' });
+    if (!check.ok) return false;
 
-  public getVoiceModel(): string {
-    return this.selectedModelId;
-  }
-
-  private getBestMandarinVoice(): SpeechSynthesisVoice | null {
-    if (!this.voices.length) this.loadVoices();
-    if (!this.voices.length) return null;
-
-    // Filter Chinese voices (zh-CN, zh-HK, zh-TW, cmn)
-    const zhVoices = this.voices.filter(
-      (v) =>
-        v.lang.toLowerCase().startsWith('zh') ||
-        v.lang.toLowerCase().includes('cmn') ||
-        v.lang.toLowerCase().includes('chinese')
-    );
-
-    if (zhVoices.length === 0) return null;
-
-    // 1. Try to find user-selected model
-    if (this.selectedModelId === 'xiaoxiao') {
-      const match = zhVoices.find(
-        (v) =>
-          v.name.toLowerCase().includes('xiaoxiao') ||
-          v.name.toLowerCase().includes('natural') ||
-          v.name.toLowerCase().includes('tingting') ||
-          v.name.toLowerCase().includes('meijia')
-      );
-      if (match) return match;
-    } else if (this.selectedModelId === 'yunxi') {
-      const match = zhVoices.find(
-        (v) =>
-          v.name.toLowerCase().includes('yunxi') ||
-          v.name.toLowerCase().includes('yunjian') ||
-          v.name.toLowerCase().includes('kangkang') ||
-          v.name.toLowerCase().includes('sin-ji')
-      );
-      if (match) return match;
-    } else if (this.selectedModelId === 'xiaoyi') {
-      const match = zhVoices.find(
-        (v) =>
-          v.name.toLowerCase().includes('xiaoyi') ||
-          v.name.toLowerCase().includes('yaoyao') ||
-          v.name.toLowerCase().includes('huihui')
-      );
-      if (match) return match;
-    }
-
-    // 2. High priority fallback: Natural or Online Chinese voices
-    const neuralVoice = zhVoices.find(
-      (v) =>
-        (v.name.toLowerCase().includes('natural') ||
-          v.name.toLowerCase().includes('online') ||
-          v.name.toLowerCase().includes('google') ||
-          v.name.toLowerCase().includes('premium')) &&
-        (v.lang === 'zh-CN' || v.lang === 'cmn-Hans-CN')
-    );
-    if (neuralVoice) return neuralVoice;
-
-    // 3. Exact zh-CN match
-    const zhCnVoice = zhVoices.find((v) => v.lang === 'zh-CN' || v.lang === 'cmn-Hans-CN');
-    if (zhCnVoice) return zhCnVoice;
-
-    return zhVoices[0];
-  }
-
-  /**
-   * Cleans and formats Mandarin text to enforce clear tone intervals
-   */
-  private prepareTextForLearners(text: string): string {
-    // Strip HTML or markdown tags if any
-    let clean = text.replace(/<[^>]*>?/gm, '').trim();
-    // Add micro-pause spacing after commas and semicolons for tone digestion
-    clean = clean.replace(/([，,])/g, '$1 ');
-    return clean;
-  }
-
-  speak(text: string, speed = 0.8, onEnd?: () => void) {
-    if (!this.synth) {
-      console.warn('SpeechSynthesis is not supported in this browser.');
-      if (onEnd) onEnd();
-      return;
-    }
-
-    this.stop();
-
-    const preparedText = this.prepareTextForLearners(text);
-    const utterance = new SpeechSynthesisUtterance(preparedText);
-    const voice = this.getBestMandarinVoice();
-
-    if (voice) {
-      utterance.voice = voice;
-      utterance.lang = voice.lang;
-    } else {
-      utterance.lang = 'zh-CN';
-    }
-
-    // Learner-friendly speed control (0.6x - 1.2x)
-    utterance.rate = Math.max(0.5, Math.min(1.2, speed));
-
-    // Pitch tuning: slightly elevated for clear, cheerful female tone or balanced male tone
-    if (this.selectedModelId === 'yunxi') {
-      utterance.pitch = 0.95;
-    } else if (this.selectedModelId === 'xiaoyi') {
-      utterance.pitch = 1.05;
-    } else {
-      utterance.pitch = 1.02; // Xiaoxiao / default
-    }
-
-    utterance.onstart = () => {
-      this.isSpeaking = true;
-    };
-
-    utterance.onend = () => {
-      this.isSpeaking = false;
-      this.currentUtterance = null;
-      if (onEnd) onEnd();
-    };
-
-    utterance.onerror = (e) => {
-      console.warn('SpeechSynthesis error:', e);
-      this.isSpeaking = false;
-      this.currentUtterance = null;
-      if (onEnd) onEnd();
-    };
-
-    this.currentUtterance = utterance;
-    this.synth.speak(utterance);
-  }
-
-  stop() {
-    if (this.synth) {
-      this.synth.cancel();
-    }
-    this.isSpeaking = false;
-    this.currentUtterance = null;
-  }
-
-  getIsSpeaking(): boolean {
-    return this.isSpeaking;
-  }
-
-  testVoice() {
-    const testSample =
-      this.selectedModelId === 'yunxi'
-        ? '你好！我是云希老师。欢迎来到汉语课堂，让我们一起努力学习！'
-        : '你好！我是丽迪娅。欢迎学习中文，跟我一起大声读出来吧！';
-    this.speak(testSample, 0.75);
+    await audio.play();
+    currentAudio = audio;
+    return true;
+  } catch {
+    return false;
   }
 }
 
-export const speechEngine = new MandarinSpeechEngine();
+/**
+ * Putar Google Translate TTS (suara natural untuk frasa/kalimat).
+ */
+async function tryGoogleTTS(text: string): Promise<boolean> {
+  try {
+    // Google TTS max ~200 char
+    const truncated = text.length > 180 ? text.slice(0, 180) : text;
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(
+      truncated
+    )}&tl=zh-CN&client=tw-ob`;
+
+    stopAudio();
+
+    const audio = new Audio(url);
+    await audio.play();
+    currentAudio = audio;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Web Speech API (fallback offline).
+ */
+function speakWithWebSpeech(text: string, rate: number): void {
+  if (!('speechSynthesis' in window)) return;
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'zh-CN';
+  utterance.rate = rate;
+  utterance.pitch = 1;
+
+  const voices = window.speechSynthesis.getVoices();
+  const chineseVoice =
+    voices.find((v) => v.lang === 'zh-CN') ||
+    voices.find((v) => v.lang.startsWith('zh-CN')) ||
+    voices.find((v) => v.lang.startsWith('zh'));
+
+  if (chineseVoice) utterance.voice = chineseVoice;
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function stopAudio(): void {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio = null;
+  }
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+/**
+ * FUNGSI UTAMA — panggil ini dari komponen.
+ */
+export async function speakMandarin(text: string, rate: number = 0.85): Promise<void> {
+  if (!text || !text.trim()) return;
+
+  // 1. Coba audio-cmn (suara manusia asli)
+  if (await tryAudioCmn(text)) return;
+
+  // 2. Coba Google TTS (natural)
+  if (await tryGoogleTTS(text)) return;
+
+  // 3. Fallback Web Speech (robot, offline)
+  speakWithWebSpeech(text, rate);
+}
+
+export function stopSpeaking(): void {
+  stopAudio();
+}
+
+// Backward compatibility — kalau komponen pakai speechEngine.speak(...)
+export const speechEngine = {
+  speak: (text: string, rate: number = 0.85) => speakMandarin(text, rate),
+  stop: stopSpeaking,
+};
+
+// Preload voices untuk Web Speech fallback
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+}
