@@ -1,18 +1,18 @@
 import { HSK1_COMPLETE_GRAMMAR } from './hskGrammarComplete';
 
-export interface LidiaGrammarExample {
+export interface 文静GrammarExample {
   hanzi: string;
   pinyin: string;
   translation: string;
 }
 
-export interface LidiaMistakeRepair {
+export interface 文静MistakeRepair {
   wrong: string;
   right: string;
   reason: string;
 }
 
-export interface LidiaGrammarEntry {
+export interface 文静GrammarEntry {
   id: string;
   level: 'HSK 1' | 'HSK 2' | 'HSK 3' | 'HSK 4' | 'HSK 5' | 'HSK 6' | 'HSK 7' | 'HSK 8' | 'HSK 9' | 'Perbandingan Penting' | 'AllSet Wiki (A1-C1)';
   cefr: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
@@ -22,8 +22,8 @@ export interface LidiaGrammarEntry {
   formula: string;
   summary: string;
   usageContexts: string[];
-  boundariesAndMistakes?: LidiaMistakeRepair[];
-  examples: LidiaGrammarExample[];
+  boundariesAndMistakes?: 文静MistakeRepair[];
+  examples: 文静GrammarExample[];
 }
 
 export const LIDIA_GRAMMAR_LEVELS = [
@@ -41,7 +41,7 @@ export const LIDIA_GRAMMAR_LEVELS = [
   'AllSet Wiki (A1-C1)'
 ] as const;
 
-const HSK1_MAPPED_KB: LidiaGrammarEntry[] = HSK1_COMPLETE_GRAMMAR.map((g, idx) => ({
+const HSK1_MAPPED_KB: 文静GrammarEntry[] = HSK1_COMPLETE_GRAMMAR.map((g, idx) => ({
   id: g.id || `hsk1-${idx + 1}`,
   level: 'HSK 1',
   cefr: 'A1',
@@ -66,7 +66,7 @@ const HSK1_MAPPED_KB: LidiaGrammarEntry[] = HSK1_COMPLETE_GRAMMAR.map((g, idx) =
       : [{ hanzi: g.example, pinyin: '', translation: '' }]
 }));
 
-export const LIDIA_GRAMMAR_KB: LidiaGrammarEntry[] = [
+export const LIDIA_GRAMMAR_KB: 文静GrammarEntry[] = [
   // ============================================================================
   // 1. DEEP-DIVE COMPARISONS (ChineseGrammar.app & AllSet Learning Grammar Wiki)
   // ============================================================================
@@ -1012,7 +1012,7 @@ export const LIDIA_GRAMMAR_KB: LidiaGrammarEntry[] = [
   ...HSK1_MAPPED_KB
 ];
 
-export function searchLidiaGrammarKB(query: string): LidiaGrammarEntry[] {
+export function search文静GrammarKB(query: string): 文静GrammarEntry[] {
   const q = query.trim().toLowerCase();
   if (!q) return LIDIA_GRAMMAR_KB;
 
@@ -1049,7 +1049,7 @@ export function searchLidiaGrammarKB(query: string): LidiaGrammarEntry[] {
     .map((item) => item.entry);
 }
 
-export function formatGrammarForPrompt(entries: LidiaGrammarEntry[]): string {
+export function formatGrammarForPrompt(entries: 文静GrammarEntry[]): string {
   if (entries.length === 0) return '';
   return entries
     .slice(0, 4)
@@ -1072,7 +1072,7 @@ ${exs}`;
     .join('\n\n---\n\n');
 }
 
-export function formatGrammarForReply(entry: LidiaGrammarEntry): string {
+export function formatGrammarForReply(entry: 文静GrammarEntry): string {
   const contexts = entry.usageContexts.map((c) => `• ${c}`).join('\n');
   const mistakes =
     entry.boundariesAndMistakes && entry.boundariesAndMistakes.length > 0
@@ -1085,7 +1085,7 @@ export function formatGrammarForReply(entry: LidiaGrammarEntry): string {
     .map((ex) => `• **${ex.hanzi}** (${ex.pinyin})\n  *Artinya: "${ex.translation}"*`)
     .join('\n');
 
-  return `你好！(Nǐ hǎo!) Berikut penjelasan lengkap dari **Lidia Laoshi (丽迪娅老师)** mengenai **${entry.title}** (*${entry.level} • CEFR ${entry.cefr} — Sumber: ${entry.source}*):
+  return `你好！(Nǐ hǎo!) Berikut penjelasan lengkap dari **文静 Laoshi (丽迪娅老师)** mengenai **${entry.title}** (*${entry.level} • CEFR ${entry.cefr} — Sumber: ${entry.source}*):
 
 📐 **Rumus / Pola Struktur:**
 \`${entry.formula}\`
@@ -1099,5 +1099,5 @@ ${contexts}${mistakes}
 💬 **Contoh Kalimat Lengkap:**
 ${examples}
 
-加油！(Jiāyóu! — Semangat!) Coba buat 1 kalimat menggunakan pola di atas, nanti Lidia Laoshi bantu periksa ya!`;
+加油！(Jiāyóu! — Semangat!) Coba buat 1 kalimat menggunakan pola di atas, nanti 文静 Laoshi bantu periksa ya!`;
 }

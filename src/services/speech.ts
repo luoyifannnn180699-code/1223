@@ -4,7 +4,7 @@
  * 2. Google Translate TTS (suara natural) — prioritas 2
  * 3. Web Speech API (browser, offline) — prioritas 3 (fallback)
  *
- * Tetap mempertahankan API voice model (Lidia/Yunxi/Xiaoyi) untuk UI.
+ * Tetap mempertahankan API voice model (文静/Yunxi/Xiaoyi) untuk UI.
  */
 
 export interface VoiceModelOption {
@@ -27,7 +27,7 @@ class MandarinSpeechEngine {
   public readonly availableModels: VoiceModelOption[] = [
     {
       id: 'xiaoxiao',
-      name: 'Lidia AI (Xiaoxiao)',
+      name: '文静 AI (Xiaoxiao)',
       description: 'Suara wanita alami, ramah, artikulasi 4 nada jernih',
       gender: 'female',
       recommended: true,

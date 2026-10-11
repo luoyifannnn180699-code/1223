@@ -43,7 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       case 'recorder':
         return 'Latihan Suara & Nada';
       case 'ai-tutor':
-        return 'Tutor AI Lidia';
+        return 'Tutor AI 文静';
       case 'analytics':
         case 'kamus-hsk':
   return 'Kamus HSK 1-9';
@@ -94,7 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="bg-transparent font-bold text-xs text-[#2C2C2C] outline-none cursor-pointer"
             title="Pilih Model Suara AI Mandarin"
           >
-            <option value="xiaoxiao">Lidia AI (Xiaoxiao)</option>
+            <option value="xiaoxiao">文静 AI (Xiaoxiao)</option>
             <option value="yunxi">Laoshi Yunxi</option>
             <option value="xiaoyi">Xiaoyi</option>
             <option value="standard">Standar Sistem</option>

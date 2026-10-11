@@ -24,7 +24,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
     { id: 'exam', label: 'Simulasi Ujian HSK 1', icon: '🎓' },
     { id: 'canvas', label: 'Tulis Hanzi Tianzi Ge', icon: '📝' },
     { id: 'recorder', label: 'Latihan Suara & Nada', icon: '🎧' },
-    { id: 'ai-tutor', label: 'Tutor AI Lidia', icon: '🤖' },
+    { id: 'ai-tutor', label: 'Tutor AI 文静', icon: '🤖' },
     { id: 'kamus-hsk', label: 'Kamus HSK 1-9', icon: '📚' },
     { id: 'analytics', label: 'Dasbor Analisis Data', icon: '📊' },
     { id: 'teacher', label: 'Portal Guru', icon: '👨‍🏫', teacherOnly: true },

@@ -8,7 +8,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { speechEngine } from '../services/speech';
-import { LIDIA_GRAMMAR_KB, LidiaGrammarEntry, LidiaGrammarExample } from '../data/lidiaAdvancedGrammarKB';
+import { LIDIA_GRAMMAR_KB, 文静GrammarEntry, 文静GrammarExample } from '../data/lidiaAdvancedGrammarKB';
 
 interface AITutorViewProps {
   audioSpeed?: number;
@@ -19,14 +19,14 @@ export const AITutorView: React.FC<AITutorViewProps> = ({ audioSpeed = 0.7 }) =>
     {
       role: 'assistant',
       content:
-        'Halo! Saya Lidia (丽迪娅老师), tutor AI tata bahasa Mandarin Anda! 🐼\n\nSaya menguasai seluruh materi tata bahasa HSK 1 hingga HSK 9 serta AllSet Learning Chinese Grammar Wiki. Tanyakan apa saja mengenai pola kalimat, perbedaan kata, atau cara penggunaan partikel yang tepat!'
+        'Halo! Saya 文静 (丽迪娅老师), tutor AI tata bahasa Mandarin Anda! 🐼\n\nSaya menguasai seluruh materi tata bahasa HSK 1 hingga HSK 9 serta AllSet Learning Chinese Grammar Wiki. Tanyakan apa saja mengenai pola kalimat, perbedaan kata, atau cara penggunaan partikel yang tepat!'
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [lidiaMode, setLidiaMode] = useState<'chat' | 'encyclopedia'>('chat');
+  const [lidiaMode, set文静Mode] = useState<'chat' | 'encyclopedia'>('chat');
   const [searchKB, setSearchKB] = useState('');
-  const [selectedKBItem, setSelectedKBItem] = useState<LidiaGrammarEntry | null>(null);
+  const [selectedKBItem, setSelectedKBItem] = useState<文静GrammarEntry | null>(null);
 
   const handleSend = async (userQuery?: string) => {
     const textToSend = userQuery || inputValue;
@@ -62,7 +62,7 @@ export const AITutorView: React.FC<AITutorViewProps> = ({ audioSpeed = 0.7 }) =>
         `📖 **Penjelasan:**\n${matched.summary}\n\n` +
         `⚠️ **Kesalahan Umum:**\n${mistakes}\n\n` +
         `✅ **Contoh Benar:**\n${matched.examples
-          .map((e: LidiaGrammarExample) => `• ${e.hanzi} (${e.pinyin}) = ${e.translation}`)
+          .map((e: 文静GrammarExample) => `• ${e.hanzi} (${e.pinyin}) = ${e.translation}`)
           .join('\n')}`;
 
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
@@ -115,18 +115,18 @@ export const AITutorView: React.FC<AITutorViewProps> = ({ audioSpeed = 0.7 }) =>
           <div>
             <div className="meta-tag">TUTOR AI MANDARIN INTERAKTIF</div>
             <h2 className="font-gaegu text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-1 flex items-center gap-2">
-              <span>Lidia AI (丽迪娅老师)</span>
+              <span>文静 AI (丽迪娅老师)</span>
               <span className="text-xl">🐼</span>
             </h2>
             <p className="text-[#666666] text-xs md:text-sm font-sans mt-0.5">
-              Tanyakan pola kalimat, aturan tata bahasa HSK, atau perbedaan kata langsung dengan Lidia!
+              Tanyakan pola kalimat, aturan tata bahasa HSK, atau perbedaan kata langsung dengan 文静!
             </p>
           </div>
 
           {/* Mode Switcher */}
           <div className="flex items-center gap-1.5 border-2 border-[#E0DED9] bg-white rounded-full p-1 text-xs">
             <button
-              onClick={() => setLidiaMode('chat')}
+              onClick={() => set文静Mode('chat')}
               className={`px-4 py-1.5 rounded-full font-bold transition flex items-center gap-1.5 ${
                 lidiaMode === 'chat'
                   ? 'bg-[#FFB703] text-[#2C2C2C] shadow-xs'
@@ -137,7 +137,7 @@ export const AITutorView: React.FC<AITutorViewProps> = ({ audioSpeed = 0.7 }) =>
               <span>Ruang Tanya</span>
             </button>
             <button
-              onClick={() => setLidiaMode('encyclopedia')}
+              onClick={() => set文静Mode('encyclopedia')}
               className={`px-4 py-1.5 rounded-full font-bold transition flex items-center gap-1.5 ${
                 lidiaMode === 'encyclopedia'
                   ? 'bg-[#FFB703] text-[#2C2C2C] shadow-xs'
@@ -213,7 +213,7 @@ export const AITutorView: React.FC<AITutorViewProps> = ({ audioSpeed = 0.7 }) =>
             {isLoading && (
               <div className="flex items-center gap-2 text-xs text-[#888888] font-mono-code p-2">
                 <span className="w-2 h-2 rounded-full bg-[#FFB703] animate-ping"></span>
-                <span>Lidia sedang menyiapkan penjelasan...</span>
+                <span>文静 sedang menyiapkan penjelasan...</span>
               </div>
             )}
           </div>
@@ -343,7 +343,7 @@ export const AITutorView: React.FC<AITutorViewProps> = ({ audioSpeed = 0.7 }) =>
                 <div className="space-y-2">
                   <span className="meta-tag">CONTOH KALIMAT:</span>
                   <div className="space-y-2">
-                    {selectedKBItem.examples.map((ex: LidiaGrammarExample, exI: number) => (
+                    {selectedKBItem.examples.map((ex: 文静GrammarExample, exI: number) => (
                       <div
                         key={exI}
                         className="border border-[#E0DED9] bg-[#FFFDF9] rounded-xl p-3 flex justify-between items-center"
@@ -372,11 +372,11 @@ export const AITutorView: React.FC<AITutorViewProps> = ({ audioSpeed = 0.7 }) =>
                   onClick={() => {
                     handleSend(`Jelaskan lebih mendalam tentang ${selectedKBItem.title} dan berikan 3 soal latihan!`);
                     setSelectedKBItem(null);
-                    setLidiaMode('chat');
+                    set文静Mode('chat');
                   }}
                   className="btn-gaegu w-full py-2 text-lg shadow-sm"
                 >
-                  Tanyakan Ini ke Lidia AI
+                  Tanyakan Ini ke 文静 AI
                 </button>
               </div>
             </div>

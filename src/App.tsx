@@ -679,7 +679,7 @@ export default function App() {
             <div className="card-tianzi p-5 text-center space-y-3">
               <h2 className="font-gaegu text-3xl font-bold text-[#2C2C2C] m-0">Selamat Datang!</h2>
               <p className="text-xs text-[#666666] leading-relaxed">
-                Siap untuk belajar menulis Hanzi hari ini? Lidia sudah menyiapkan latihan Tianzi Ge khusus untukmu.
+                Siap untuk belajar menulis Hanzi hari ini? 文静 sudah menyiapkan latihan Tianzi Ge khusus untukmu.
               </p>
               <div className="text-4xl my-2">📝</div>
               <button 
@@ -815,7 +815,7 @@ export default function App() {
             <div className="grid grid-cols-2 gap-2 pt-1 font-gaegu text-lg">
               <a
                 href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
-                  `Halo! Mari belajar Bahasa Mandarin HSK 1 seru dengan audio native dan AI Lidia di sini: ${window.location.origin}`
+                  `Halo! Mari belajar Bahasa Mandarin HSK 1 seru dengan audio native dan AI 文静 di sini: ${window.location.origin}`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
