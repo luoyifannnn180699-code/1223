@@ -74,7 +74,10 @@ class MandarinSpeechEngine {
   public getVoiceModel(): string {
     return this.selectedModelId;
   }
-
+public testVoice(): void {
+  // Uji voice model dengan kalimat sapaan Mandarin
+  this.speak('你好，我是丽迪娅老师', 0.85);
+}
   // ============================================================
   // SPEAK — 3-tier priority
   // ============================================================

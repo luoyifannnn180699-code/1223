@@ -18,6 +18,7 @@ import {
 import confetti from 'canvas-confetti';
 import { Navbar } from './components/Navbar';
 import { SidebarNav } from './components/SidebarNav';
+import { BottomNav } from './components/BottomNav';
 import { AuthModal } from './components/AuthModal';
 import { UserProfileModal } from './components/UserProfileModal';
 import { TianziCanvas } from './components/TianziCanvas';
@@ -36,6 +37,7 @@ import { UserProfile } from './types';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('lessons');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentChapterIdx, setCurrentChapterIdx] = useState<number>(0);
   const [lessonSubTab, setLessonSubTab] = useState<'dialogue' | 'vocab' | 'grammar' | 'phonetics' | 'quiz'>('dialogue');
   const [audioSpeed, setAudioSpeed] = useState<number>(0.7);
@@ -109,8 +111,9 @@ export default function App() {
     <div className="h-screen w-screen overflow-hidden flex flex-col p-3 md:p-4 gap-3 bg-[#F8F7F4] text-[#2C2C2C] font-sans selection:bg-[#FFB703] selection:text-[#2C2C2C]">
       {/* Variation 1 Header (nav-card) */}
       <Navbar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
+  activeTab={activeTab}
+  setActiveTab={setActiveTab}
+  onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
         currentUser={currentUser}
         onOpenAuth={() => setIsAuthOpen(true)}
         onOpenProfile={() => setIsProfileOpen(true)}
