@@ -45,6 +45,8 @@ export const Navbar: React.FC<NavbarProps> = ({
       case 'ai-tutor':
         return 'Tutor AI Lidia';
       case 'analytics':
+        case 'kamus-hsk':
+  return 'Kamus HSK 1-9';
         return 'Dasbor Analisis Data';
       case 'teacher':
         return 'Portal Guru & Nilai';

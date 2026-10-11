@@ -25,6 +25,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
     { id: 'canvas', label: 'Tulis Hanzi Tianzi Ge', icon: '📝' },
     { id: 'recorder', label: 'Latihan Suara & Nada', icon: '🎧' },
     { id: 'ai-tutor', label: 'Tutor AI Lidia', icon: '🤖' },
+    { id: 'kamus-hsk', label: 'Kamus HSK 1-9', icon: '📚' },
     { id: 'analytics', label: 'Dasbor Analisis Data', icon: '📊' },
     { id: 'teacher', label: 'Portal Guru', icon: '👨‍🏫', teacherOnly: true },
   ];

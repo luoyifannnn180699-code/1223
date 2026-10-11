@@ -34,6 +34,7 @@ import { speechEngine } from './services/speech';
 import { soundEffects } from './services/soundEffects';
 import { dbService } from './services/db';
 import { UserProfile } from './types';
+import { KamusHskView } from './components/KamusHsk/KamusHskView';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('lessons');
@@ -150,6 +151,7 @@ export default function App() {
                 { id: 'canvas', label: '📝 Tianzi Ge' },
                 { id: 'recorder', label: '🎧 Audio' },
                 { id: 'ai-tutor', label: '🤖 Tutor AI' },
+                { id: 'kamus-hsk', label: 'Kamus HSK 1-9', icon: '📚' },
                 { id: 'analytics', label: '📊 Analisis' },
                 { id: 'teacher', label: '👨‍🏫 Guru' }
               ].map((t) => (
@@ -653,6 +655,8 @@ export default function App() {
 
             {/* TAB 7: DASBOR ANALISIS DATA */}
             {activeTab === 'analytics' && <AnalyticsDashboard currentUser={currentUser} />}
+            
+            {activeTab === 'kamus-hsk' && <KamusHskView />}
 
             {/* TAB 8: PORTAL GURU */}
             {activeTab === 'teacher' && <TeacherPortal />}
