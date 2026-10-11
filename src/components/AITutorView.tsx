@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 import {
   Send,
-  Sparkles,
   Volume2,
   Lightbulb,
-  Brain,
-  RefreshCw,
-  Award,
   BookOpen,
   Search,
-  CheckCircle2,
-  AlertTriangle,
-  MessageSquare,
-  Layers
+  MessageSquare
 } from 'lucide-react';
 import { speechEngine } from '../services/speech';
 import { LIDIA_GRAMMAR_KB, LidiaGrammarEntry, LidiaGrammarExample } from '../data/lidiaAdvancedGrammarKB';
@@ -43,51 +36,58 @@ export const AITutorView: React.FC<AITutorViewProps> = ({ audioSpeed = 0.7 }) =>
     if (!userQuery) setInputValue('');
     setIsLoading(true);
 
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: textToSend })
-      });
+    // Delay kecil biar UX terasa natural
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
-      if (!response.ok) {
-        throw new Error('Gagal menghubungi AI');
-      }
+    // Cari di knowledge base lokal
+    const q = textToSend.toLowerCase();
+    const matched = LIDIA_GRAMMAR_KB.find((kb) => {
+      if (kb.title.toLowerCase().includes(q)) return true;
+      if (kb.keywords.some((k) => q.includes(k.toLowerCase()))) return true;
+      if (kb.examples.some((e) => q.includes(e.hanzi))) return true;
+      return false;
+    });
 
-      const data = await response.json();
-      setMessages((prev) => [...prev, { role: 'assistant', content: data.reply || 'Maaf, saya tidak dapat merespons saat ini.' }]);
-    } catch {
-      // Fallback response from internal knowledge base
-      const matched = LIDIA_GRAMMAR_KB.find(
-        (kb) =>
-          textToSend.toLowerCase().includes(kb.keywords[0]?.toLowerCase() || '') ||
-          textToSend.toLowerCase().includes(kb.title.toLowerCase())
-      );
-
-      if (matched) {
-        const mistakes = matched.boundariesAndMistakes && matched.boundariesAndMistakes.length > 0
-          ? matched.boundariesAndMistakes.map(m => `Salah: "${m.wrong}" ➔ Benar: "${m.right}" (${m.reason})`).join('\n')
+    if (matched) {
+      const mistakes =
+        matched.boundariesAndMistakes && matched.boundariesAndMistakes.length > 0
+          ? matched.boundariesAndMistakes
+              .map((m) => `❌ Salah: "${m.wrong}" ➔ ✅ Benar: "${m.right}"\n   Alasan: ${m.reason}`)
+              .join('\n\n')
           : 'Perhatikan urutan kata dan fungsi partikel yang tepat.';
 
-        const reply = `Berikut penjelasan mengenai ${matched.title}:\n\n` +
-          `📌 Pola Struktur:\n${matched.formula}\n\n` +
-          `📖 Penjelasan:\n${matched.summary}\n\n` +
-          `⚠️ Kesalahan Umum:\n${mistakes}\n\n` +
-          `✅ Contoh Benar:\n${matched.examples.map((e: LidiaGrammarExample) => `• ${e.hanzi} (${e.pinyin}) = ${e.translation}`).join('\n')}`;
-        setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
-      } else {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            content:
-              'Pertanyaan bagus! Untuk materi tersebut, pastikan memperhatikan subjek, kata kerja, dan penempatan keterangan waktu atau tempat yang selalu mendahului predikat dalam Bahasa Mandarin.'
-          }
-        ]);
-      }
-    } finally {
-      setIsLoading(false);
+      const reply =
+        `Berikut penjelasan mengenai **${matched.title}**:\n\n` +
+        `📐 **Rumus:**\n${matched.formula}\n\n` +
+        `📖 **Penjelasan:**\n${matched.summary}\n\n` +
+        `⚠️ **Kesalahan Umum:**\n${mistakes}\n\n` +
+        `✅ **Contoh Benar:**\n${matched.examples
+          .map((e: LidiaGrammarExample) => `• ${e.hanzi} (${e.pinyin}) = ${e.translation}`)
+          .join('\n')}`;
+
+      setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
+    } else {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content:
+            'Pertanyaan bagus! Untuk materi tersebut, pastikan memperhatikan subjek, kata kerja, dan penempatan keterangan waktu atau tempat yang selalu mendahului predikat dalam Bahasa Mandarin.\n\n' +
+            '💡 Coba tanyakan topik berikut yang sudah tersedia di pustaka saya:\n' +
+            '• 有点儿 vs 一点儿\n' +
+            '• 一...就... (begitu... langsung...)\n' +
+            '• 还是 vs 或者\n' +
+            '• 会 vs 能 vs 可以\n' +
+            '• 的 vs 得 vs 地\n' +
+            '• 不 vs 没\n' +
+            '• Struktur 是...的\n' +
+            '• 把字句 & 被字句\n\n' +
+            'Atau buka tab **Pustaka** untuk lihat semua topik yang tersedia!'
+        }
+      ]);
     }
+
+    setIsLoading(false);
   };
 
   const handleSpeakText = (text: string) => {
@@ -109,7 +109,7 @@ export const AITutorView: React.FC<AITutorViewProps> = ({ audioSpeed = 0.7 }) =>
 
   return (
     <div className="space-y-6">
-      {/* Header Banner - Variation 1 Warm Card */}
+      {/* Header Banner */}
       <div className="border-2 border-[#E0DED9] bg-[#FFFDF9] rounded-[20px] p-6 space-y-4">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div>
